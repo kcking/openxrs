@@ -1589,6 +1589,7 @@ impl Parser {
             out.has_unprintable |= member.ty.starts_with("PFN") || member.ty == "LUID";
             out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
             out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
+            out.has_action |= member.ty == "XrAction";
             out.has_array |= member.static_array_len.is_some();
             if member.ty != name {
                 if let Some(x) = self.structs.get(&member.ty) {
@@ -1723,6 +1724,8 @@ impl Parser {
                 type_args
             } else if m.ty == "XrSwapchain" || m.ty == "XrSession" {
                 quote! { <G> }
+            } else if m.ty == "XrAction" {
+                quote! { <ATY> }
             } else {
                 quote! {}
             };
@@ -1941,6 +1944,7 @@ struct StructMeta {
     has_pointer: bool,
     has_array: bool,
     has_graphics: bool,
+    has_action: bool,
 }
 
 impl StructMeta {
@@ -1955,12 +1959,20 @@ impl StructMeta {
             params.push(quote! { G: Graphics });
             args.push(quote! { G });
         }
+        if self.has_action {
+            params.push(quote! { ATY: ActionTy});
+            args.push(quote! { ATY });
+        }
         let phantom = if self.has_pointer && self.has_graphics {
             quote! { &'a G }
+        } else if self.has_pointer && self.has_action {
+            quote! { &'a ATY }
         } else if self.has_pointer {
             quote! { &'a () }
         } else if self.has_graphics {
             quote! { G }
+        } else if self.has_action {
+            quote! { ATY }
         } else {
             quote! {}
         };
@@ -1983,6 +1995,7 @@ impl std::ops::BitOrAssign for StructMeta {
         self.has_pointer |= rhs.has_pointer;
         self.has_array |= rhs.has_array;
         self.has_graphics |= rhs.has_graphics;
+        self.has_action |= rhs.has_action;
     }
 }
 

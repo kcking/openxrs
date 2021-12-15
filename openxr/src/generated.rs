@@ -4196,17 +4196,17 @@ pub(crate) mod builder {
         }
     }
     #[repr(transparent)]
-    pub struct BindingModificationBase<'a> {
+    pub struct BindingModificationBase<'a, ATY: ActionTy> {
         _inner: sys::BindingModificationBaseHeaderKHR,
-        _marker: PhantomData<&'a ()>,
+        _marker: PhantomData<&'a ATY>,
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
-    pub struct InteractionProfileAnalogThresholdVALVE<'a> {
+    pub struct InteractionProfileAnalogThresholdVALVE<'a, ATY: ActionTy> {
         inner: sys::InteractionProfileAnalogThresholdVALVE,
-        _marker: PhantomData<&'a ()>,
+        _marker: PhantomData<&'a ATY>,
     }
-    impl<'a> InteractionProfileAnalogThresholdVALVE<'a> {
+    impl<'a, ATY: ActionTy> InteractionProfileAnalogThresholdVALVE<'a, ATY> {
         #[inline]
         pub fn new() -> Self {
             Self {
@@ -4239,7 +4239,7 @@ pub(crate) mod builder {
             &self.inner
         }
         #[inline]
-        pub fn action(mut self, value: &'a Action) -> Self {
+        pub fn action(mut self, value: &'a Action<ATY>) -> Self {
             self.inner.action = value.as_raw();
             self
         }
@@ -4269,14 +4269,14 @@ pub(crate) mod builder {
             self
         }
     }
-    impl<'a> Deref for InteractionProfileAnalogThresholdVALVE<'a> {
-        type Target = BindingModificationBase<'a>;
+    impl<'a, ATY: ActionTy> Deref for InteractionProfileAnalogThresholdVALVE<'a, ATY> {
+        type Target = BindingModificationBase<'a, ATY>;
         #[inline]
         fn deref(&self) -> &Self::Target {
             unsafe { mem::transmute(&self.inner) }
         }
     }
-    impl<'a> Default for InteractionProfileAnalogThresholdVALVE<'a> {
+    impl<'a, ATY: ActionTy> Default for InteractionProfileAnalogThresholdVALVE<'a, ATY> {
         fn default() -> Self {
             Self::new()
         }
