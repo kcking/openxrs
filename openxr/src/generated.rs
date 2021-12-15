@@ -1640,8 +1640,14 @@ impl<'a> ViveTrackerConnectedHTCX<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn paths(self) -> *mut ViveTrackerPathsHTCX {
-        (self.0).paths
+    pub fn paths(self) -> Vec<*mut ViveTrackerPathsHTCX> {
+        let mut v = vec![];
+        let mut ptr = (self.0).paths;
+        while !ptr.is_null() {
+            v.push(ptr);
+            ptr = unsafe { *ptr }.next as *mut ViveTrackerPathsHTCX;
+        }
+        v
     }
 }
 #[derive(Copy, Clone)]
