@@ -1723,6 +1723,8 @@ impl Parser {
                 type_args
             } else if m.ty == "XrSwapchain" || m.ty == "XrSession" {
                 quote! { <G> }
+            } else if m.ty == "XrAction" {
+                quote! { <ATY> }
             } else {
                 quote! {}
             };
@@ -1780,9 +1782,14 @@ impl Parser {
                     }
                 }
             };
+
+            let fn_type_params = match &m.ty[..] {
+                "XrAction" => quote! { <ATY: ActionTy> },
+                _ => quote! {},
+            };
             Some(quote! {
                 #[inline]
-                pub fn #ident(mut self, value: #ty) -> Self {
+                pub fn #ident#fn_type_params(mut self, value: #ty) -> Self {
                     #init
                     self
                 }
