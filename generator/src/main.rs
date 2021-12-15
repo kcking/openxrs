@@ -1378,6 +1378,7 @@ impl Parser {
                     .map(|x| &x[..]),
             )
             .chain(self.bitmasks.keys().map(|x| &x[..]))
+            .chain(["XrViveTrackerPathsHTCX"])
             .map(xr_ty_name);
 
         let mut event_cases = Vec::new();
