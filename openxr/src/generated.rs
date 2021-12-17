@@ -25,7 +25,7 @@ pub use sys::{
     SwapchainCreateFlags, SwapchainCreateFoveationFlagsFB, SwapchainStateFoveationFlagsFB,
     SwapchainUsageFlags, SystemGraphicsProperties, TriangleMeshFlagsFB, Vector2f, Vector3f,
     Vector4f, Vector4sFB, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
-    ViveTrackerPathsHTCX, VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR, WindingOrderFB,
+    VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR, WindingOrderFB,
 };
 #[doc = r" A subset of known extensions"]
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
@@ -1640,14 +1640,8 @@ impl<'a> ViveTrackerConnectedHTCX<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn paths(self) -> Vec<*mut ViveTrackerPathsHTCX> {
-        let mut v = vec![];
-        let mut ptr = (self.0).paths;
-        while !ptr.is_null() {
-            v.push(ptr);
-            ptr = unsafe { *ptr }.next as *mut ViveTrackerPathsHTCX;
-        }
-        v
+    pub fn paths(self) -> ViveTrackerPathsHTCX {
+        (self.0).paths.into()
     }
 }
 #[derive(Copy, Clone)]

@@ -1386,7 +1386,6 @@ impl Parser {
                     .map(|x| &x[..]),
             )
             .chain(self.bitmasks.keys().map(|x| &x[..]))
-            .chain(["XrViveTrackerPathsHTCX"])
             .map(xr_ty_name);
 
         let mut event_cases = Vec::new();
@@ -1911,20 +1910,13 @@ impl Parser {
             } else if self.handles.contains(&m.ty) {
                 let ty = xr_var_ty(m);
                 (quote! { sys::#ty }, quote! { (self.0).#ident })
-            } else if self.is_ptr_chain(&m.ty) {
-                let ty = xr_var_ty(m);
+            } else if m.ty == "XrViveTrackerPathsHTCX" {
                 (
                     quote! {
-                        Vec<#ty>
+                        ViveTrackerPathsHTCX
                     },
                     quote! {
-                        let mut v = vec![];
-                        let mut ptr = (self.0).#ident;
-                        while !ptr.is_null() {
-                            v.push(ptr);
-                            ptr = unsafe { *ptr }.next as #ty;
-                        }
-                        v
+                        (self.0).#ident.into()
                     },
                 )
             } else {
@@ -1965,14 +1957,6 @@ impl Parser {
                     .map_or(true, |x| self.is_simple_struct(x))
                 && !self.handles.contains(&x.ty)
         })
-    }
-
-    fn is_ptr_chain(&self, ty: &str) -> bool {
-        self.structs
-            .get(ty)
-            .map(|m| &m.members)
-            .map(|m| m.iter().any(|m| m.name == "next"))
-            .unwrap_or(false)
     }
 }
 
